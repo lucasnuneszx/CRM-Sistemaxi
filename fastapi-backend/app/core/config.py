@@ -41,4 +41,8 @@ class Settings(BaseSettings):
 
 
 # Create global settings instance
-settings = Settings() 
+settings = Settings()
+
+# Limpar DATABASE_URL se tiver '=' no início (correção para Railway)
+if settings.database_url and settings.database_url.startswith('='):
+    settings.database_url = settings.database_url[1:].strip() 

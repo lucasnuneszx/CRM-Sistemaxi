@@ -2,17 +2,24 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import settings
+import os
+
+# Limpar DATABASE_URL se necessário
+database_url = settings.database_url.strip()
+# Remover '=' no início se existir (erro comum no Railway)
+if database_url.startswith('='):
+    database_url = database_url[1:].strip()
 
 # Create database engine
-if settings.database_url.startswith("sqlite"):
+if database_url.startswith("sqlite"):
     engine = create_engine(
-        settings.database_url, 
+        database_url, 
         connect_args={"check_same_thread": False}
     )
 else:
     # PostgreSQL configuration
     engine = create_engine(
-        settings.database_url, 
+        database_url, 
         pool_pre_ping=True
     )
 

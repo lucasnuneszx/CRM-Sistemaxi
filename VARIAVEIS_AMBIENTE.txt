@@ -1,0 +1,61 @@
+# ============================================
+# VARIÁVEIS DE AMBIENTE - RAILWAY
+# ============================================
+
+# ============================================
+# OBRIGATÓRIAS
+# ============================================
+
+# 1. Banco de Dados (Configure via "Add Reference" no Railway)
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+
+# 2. JWT - Autenticação
+JWT_SECRET_KEY=seu-jwt-secret-key-super-seguro-aqui
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+# 3. Ambiente
+ENVIRONMENT=production
+
+# ============================================
+# OPCIONAIS (mas Recomendadas)
+# ============================================
+
+# 4. Segurança - Proteção do endpoint de inicialização
+INIT_DATABASE_SECRET=sua-chave-secreta-para-init
+
+# 5. CORS - Se tiver frontend separado
+CORS_ORIGINS=https://seu-frontend.railway.app
+
+# 6. MinIO - Armazenamento de arquivos (opcional)
+MINIO_ENDPOINT=s3api.sellhuub.com
+MINIO_ACCESS_KEY=sua-access-key
+MINIO_SECRET_KEY=sua-secret-key
+MINIO_BUCKET_NAME=squad
+MINIO_USE_SSL=true
+
+# ============================================
+# INSTRUÇÕES
+# ============================================
+
+# 1. DATABASE_URL: Configure via "Add Reference" no Railway
+#    - Variables → New Variable → Add Reference
+#    - Selecione PostgreSQL → DATABASE_URL
+
+# 2. JWT_SECRET_KEY: Gere com:
+#    openssl rand -hex 32
+
+# 3. Para criar tabelas, acesse:
+#    https://sistemaxi.up.railway.app/api/init-database
+#    Ou com secret:
+#    https://sistemaxi.up.railway.app/api/init-database?secret=INIT_DATABASE_SECRET
+
+# ============================================
+# VALORES MÍNIMOS NECESSÁRIOS
+# ============================================
+
+# Mínimo para funcionar:
+# - DATABASE_URL (via Reference)
+# - JWT_SECRET_KEY
+# - ENVIRONMENT=production
+

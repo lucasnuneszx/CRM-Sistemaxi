@@ -375,8 +375,8 @@ async def startup_event():
         except Exception as e:
             print(f"⚠️  Falha ao garantir admin padrão: {e}")
     else:
-        print("❌ Falha na conexão com banco de dados!")
-        exit(1)
+        print("⚠️  Falha na conexão com banco de dados! A aplicação continuará, mas algumas funcionalidades podem não funcionar.")
+        # Não fazer exit(1) para permitir que a API inicie mesmo sem banco
     
     # Get port from environment (Railway provides PORT)
     port = os.getenv("PORT", "3001")
@@ -401,6 +401,91 @@ async def root():
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "version": settings.project_version}
+
+
+@app.get("/api/init-database")
+async def init_database_endpoint(secret: str = None):
+    """
+    Endpoint para inicializar o banco de dados e criar todas as tabelas.
+    
+    Uso: https://sistemaxi.up.railway.app/api/init-database?secret=INIT_SECRET_KEY
+    
+    Ou sem secret (apenas para desenvolvimento):
+    https://sistemaxi.up.railway.app/api/init-database
+    """
+    # Verificar secret se configurado (opcional, mas recomendado)
+    init_secret = os.getenv("INIT_DATABASE_SECRET")
+    if init_secret and secret != init_secret:
+        raise HTTPException(
+            status_code=403,
+            detail="Secret key inválida. Configure INIT_DATABASE_SECRET nas variáveis de ambiente."
+        )
+    
+    try:
+        # Test connection
+        if not test_connection():
+            return {
+                "success": False,
+                "message": "❌ Erro na conexão com banco de dados!",
+                "error": "Não foi possível conectar ao banco de dados"
+            }
+        
+        # Create tables
+        create_tables()
+        
+        # Create admin user if not exists
+        db = SessionLocal()
+        try:
+            admin_user = db.query(User).filter(
+                (User.email == "admin@sistemaxi.com") | (User.email == "admin@admin.com")
+            ).first()
+            
+            if not admin_user:
+                admin_user = User(
+                    name="Admin",
+                    username="admin",
+                    email="admin@sistemaxi.com",
+                    hashed_password=get_password_hash("admin1234"),
+                    is_active=True,
+                    is_admin=True
+                )
+                db.add(admin_user)
+                db.commit()
+                admin_created = True
+            else:
+                admin_created = False
+        except Exception as e:
+            db.rollback()
+            return {
+                "success": False,
+                "message": "⚠️ Erro ao criar usuário admin",
+                "error": str(e),
+                "tables_created": True
+            }
+        finally:
+            db.close()
+        
+        return {
+            "success": True,
+            "message": "🎉 Banco de dados inicializado com sucesso!",
+            "tables_created": True,
+            "admin_user_created": admin_created,
+            "admin_credentials": {
+                "email": "admin@sistemaxi.com",
+                "password": "admin1234"
+            } if admin_created else "Admin já existia",
+            "next_steps": [
+                "Acesse /docs para ver a documentação da API",
+                "Faça login com as credenciais admin",
+                "Altere a senha do admin após o primeiro login"
+            ]
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "❌ Erro ao inicializar banco de dados",
+            "error": str(e)
+        }
 
 # Legacy atividade endpoints with frontend field names
 @app.get("/api/atividades")
