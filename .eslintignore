@@ -1,0 +1,23 @@
+# Arquivos de teste e desenvolvimento
+src/test-minio.ts
+src/controllers/documentoController.ts
+
+# Arquivos com problemas de ESLint temporários
+src/components/CasaParceiraModal.tsx
+src/app/(protected)/projects/[id]/metricas-redes-sociais/page.tsx
+src/app/(protected)/projects/[id]/casas-parceiras/new/page.tsx
+src/app/(protected)/projects/[id]/casas-parceiras/[slug]/edit/page.tsx
+
+# Node modules
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+
+# Environment files
+.env*
+
+# Logs
+*.log 

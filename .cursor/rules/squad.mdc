@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Todos os componentes da UI devem ser instalados de forma consistente com o padrão shadcn, não criados do zero.

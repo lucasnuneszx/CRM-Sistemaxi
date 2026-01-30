@@ -1,0 +1,54 @@
+// Modelo de documento/arquivo
+model Documento {
+  id             String      @id @default(uuid())
+  nome           String
+  key            String      // Caminho no S3/MinIO
+  url            String      // URL para acesso
+  tamanho        Int?
+  tipo           String?     // Tipo de arquivo (MIME type)
+  projetoId      String?
+  projeto        Project?    @relation(fields: [projetoId], references: [id])
+  atividadeId    String?
+  atividade      Atividade?  @relation(fields: [atividadeId], references: [id])
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+// Modelo de projeto para marketing
+model Project {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  budget      Float
+  status      String    @default("planning") // planning, active, paused, completed
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  campaigns   Campaign[]
+  team        TeamMember[]
+  users       User[]     @relation("ProjectUsers")
+  atividades  Atividade[]
+  documentos  Documento[]
+}
+
+// Modelo de atividades para projetos
+model Atividade {
+  id             String      @id @default(uuid())
+  nome           String
+  descricao      String?
+  status         String      @default("Não iniciada") // Não iniciada, Em andamento, Concluída, Atrasada
+  prazo          DateTime?
+  dataInicio     DateTime?
+  dataFim        DateTime?
+  prioridade     String?     @default("Média") // Baixa, Média, Alta, Urgente
+  projetoId      String
+  projeto        Project     @relation(fields: [projetoId], references: [id])
+  responsavelId  String?
+  responsavel    User?       @relation("UserAtividades", fields: [responsavelId], references: [id])
+  setorId        String?
+  setor          Setor?      @relation(fields: [setorId], references: [id])
+  documentos     Documento[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+} 

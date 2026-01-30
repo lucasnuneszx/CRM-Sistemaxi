@@ -1,0 +1,71 @@
+[Unit]
+Description=Gestauto Backend FastAPI Application
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+# --- Configuração de Ambiente ---
+# Carregar variáveis de um arquivo .env
+EnvironmentFile=/home/gestauto/backend/.env
+
+# --- Usuário e Grupo ---
+# IMPORTANTE: Criar usuário dedicado é mais seguro que usar root
+User=gestauto
+Group=www-data
+
+# --- Diretório de Trabalho ---
+# Caminho ABSOLUTO para a pasta do backend onde está seu código FastAPI
+WorkingDirectory=/home/gestauto/backend
+
+# --- Comando de Execução ---
+# Usando gunicorn com uvicorn workers para melhor performance
+# -w 4: número de workers (ajuste conforme CPU: núcleos * 2 + 1)
+# -k uvicorn.workers.UvicornWorker: workers otimizados para async
+# --bind 0.0.0.0:9099: escutar em todas as interfaces na porta 9099
+# --timeout 120: timeout de 2 minutos para requests
+# --keep-alive 5: keep-alive de 5 segundos
+# --max-requests 1000: reciclar worker após 1000 requests
+# --preload: carregar aplicação antes de fork dos workers
+ExecStart=/home/gestauto/backend/.venv/bin/gunicorn \
+    --workers 4 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 0.0.0.0:9099 \
+    --timeout 120 \
+    --keep-alive 5 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --preload \
+    --access-logfile /var/log/gestauto/access.log \
+    --error-logfile /var/log/gestauto/error.log \
+    --log-level info \
+    app.main:app
+
+# --- Comandos de Controle ---
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=30
+
+# --- Reinicialização e Limites ---
+Restart=always
+RestartSec=10
+StartLimitBurst=3
+StartLimitInterval=60
+
+# Limites de sistema para aplicações em produção
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# --- Segurança ---
+# Proteções adicionais de segurança
+NoNewPrivileges=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/home/gestauto/backend /var/log/gestauto /tmp
+
+# --- Variáveis de Ambiente Específicas ---
+Environment="PYTHONPATH=/home/gestauto/backend"
+Environment="PYTHONUNBUFFERED=1"
+Environment="TZ=America/Sao_Paulo"
+
+[Install]
+WantedBy=multi-user.target 
