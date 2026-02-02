@@ -13,6 +13,7 @@ if env_db_url:
         env_db_url = env_db_url[1:].strip()
     database_url = env_db_url
     print(f"✅ database.py: DATABASE_URL do ambiente Railway: {env_db_url.split('@')[0] if '@' in env_db_url else env_db_url[:50]}...")
+    print(f"   Tipo detectado: {'PostgreSQL' if 'postgresql' in database_url.lower() else 'SQLite'}")
 else:
     # Fallback: usar do settings
     database_url = settings.database_url.strip()
@@ -20,6 +21,7 @@ else:
     if database_url.startswith('='):
         database_url = database_url[1:].strip()
     print(f"⚠️  database.py: DATABASE_URL não encontrada no ambiente, usando fallback: {database_url[:50]}...")
+    print(f"   ⚠️  ATENÇÃO: Isso significa que a variável DATABASE_URL não está configurada no Railway!")
 
 # Create database engine
 if database_url.startswith("sqlite"):
