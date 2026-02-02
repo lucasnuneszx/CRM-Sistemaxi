@@ -11,6 +11,9 @@ class Settings(BaseSettings):
         env_file=os.getenv("ENV_FILE", "config.env"),
         case_sensitive=False,
         env_ignore_empty=True,
+        env_file_encoding='utf-8',
+        # Priorizar variáveis de ambiente sobre arquivo .env
+        extra='ignore',
     )
     
     # Database
@@ -42,6 +45,14 @@ class Settings(BaseSettings):
 
 # Create global settings instance
 settings = Settings()
+
+# Priorizar DATABASE_URL do ambiente se existir (Railway)
+env_database_url = os.getenv("DATABASE_URL")
+if env_database_url:
+    # Limpar '=' no início se existir
+    if env_database_url.startswith('='):
+        env_database_url = env_database_url[1:].strip()
+    settings.database_url = env_database_url
 
 # Limpar DATABASE_URL se tiver '=' no início (correção para Railway)
 if settings.database_url and settings.database_url.startswith('='):
