@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional, List
+from typing import Optional, List, ClassVar
 from pydantic import Field
 import os
 
@@ -8,10 +8,11 @@ class Settings(BaseSettings):
     """Application settings"""
     
     # Em produção (Railway), não usar arquivo .env - apenas variáveis de ambiente
-    env_file_path = os.getenv("ENV_FILE") if os.getenv("ENVIRONMENT") == "production" else os.getenv("ENV_FILE", "config.env")
+    # Usar ClassVar para não ser tratado como campo do modelo
+    _env_file_path: ClassVar[Optional[str]] = None
     
     model_config = SettingsConfigDict(
-        env_file=env_file_path if os.path.exists(env_file_path) and os.getenv("ENVIRONMENT") != "production" else None,
+        env_file=None,  # Sempre None - vamos usar apenas variáveis de ambiente
         case_sensitive=False,
         env_ignore_empty=True,
         env_file_encoding='utf-8',
