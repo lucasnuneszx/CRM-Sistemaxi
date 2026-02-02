@@ -4,21 +4,22 @@ from sqlalchemy.orm import sessionmaker
 from .config import settings
 import os
 
-# FORÇAR leitura de DATABASE_URL do ambiente se existir (Railway)
+# FORÇAR leitura DIRETA de DATABASE_URL do ambiente (Railway)
+# Ignora completamente settings.database_url se existir no ambiente
 env_db_url = os.getenv("DATABASE_URL")
 if env_db_url:
     # Limpar '=' no início se existir
     if env_db_url.startswith('='):
         env_db_url = env_db_url[1:].strip()
     database_url = env_db_url
-    print(f"🔧 database.py: Usando DATABASE_URL do ambiente")
+    print(f"✅ database.py: DATABASE_URL do ambiente Railway: {env_db_url.split('@')[0] if '@' in env_db_url else env_db_url[:50]}...")
 else:
-    # Usar do settings
+    # Fallback: usar do settings
     database_url = settings.database_url.strip()
-    # Remover '=' no início se existir (erro comum no Railway)
+    # Remover '=' no início se existir
     if database_url.startswith('='):
         database_url = database_url[1:].strip()
-    print(f"🔧 database.py: Usando DATABASE_URL do settings")
+    print(f"⚠️  database.py: DATABASE_URL não encontrada no ambiente, usando fallback: {database_url[:50]}...")
 
 # Create database engine
 if database_url.startswith("sqlite"):
