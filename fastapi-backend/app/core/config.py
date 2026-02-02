@@ -7,16 +7,18 @@ import os
 class Settings(BaseSettings):
     """Application settings"""
     
+    # Em produção (Railway), não usar arquivo .env - apenas variáveis de ambiente
+    env_file_path = os.getenv("ENV_FILE") if os.getenv("ENVIRONMENT") == "production" else os.getenv("ENV_FILE", "config.env")
+    
     model_config = SettingsConfigDict(
-        env_file=os.getenv("ENV_FILE", "config.env"),
+        env_file=env_file_path if os.path.exists(env_file_path) and os.getenv("ENVIRONMENT") != "production" else None,
         case_sensitive=False,
         env_ignore_empty=True,
         env_file_encoding='utf-8',
-        # Priorizar variáveis de ambiente sobre arquivo .env
         extra='ignore',
     )
     
-    # Database
+    # Database - será sobrescrito abaixo se existir no ambiente
     database_url: str = Field(default="sqlite:///./squad.db", alias="DATABASE_URL")
     
     # JWT
