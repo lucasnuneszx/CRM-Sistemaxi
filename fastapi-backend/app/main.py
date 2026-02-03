@@ -55,10 +55,25 @@ if railway_public_domain:
         f"http://{railway_public_domain}",
     ])
 
-# Adicionar variável de ambiente para CORS customizado
+# Adicionar variável de ambiente para CORS customizado (frontend)
 custom_cors = os.getenv("CORS_ORIGINS")
 if custom_cors:
     cors_origins.extend([origin.strip() for origin in custom_cors.split(",")])
+
+# Adicionar domínio do frontend se configurado
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    cors_origins.extend([
+        frontend_url,
+        frontend_url.rstrip('/'),
+    ])
+
+# Permitir qualquer domínio .railway.app (para desenvolvimento)
+# Em produção, é melhor especificar os domínios exatos
+if os.getenv("ENVIRONMENT") == "production":
+    # Em produção, aceitar qualquer .railway.app
+    cors_origins.append("https://*.railway.app")
+    cors_origins.append("http://*.railway.app")
 
 app.add_middleware(
     CORSMiddleware,
