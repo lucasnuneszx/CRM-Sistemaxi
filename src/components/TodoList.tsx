@@ -27,7 +27,7 @@ const TodoList = () => {
           <Calendar
             mode="single"
             selected={date}
-            onSelect={(date) => {
+            onSelect={(date: Date | undefined) => {
               setDate(date);
               setOpen(false);
             }}
