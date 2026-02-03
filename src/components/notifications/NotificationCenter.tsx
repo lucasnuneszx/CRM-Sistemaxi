@@ -143,7 +143,7 @@ export default function NotificationCenter() {
                 </div>
               ) : (
                 <div className="divide-y">
-                  {filteredNotifications.map((notification) => (
+                  {filteredNotifications.map((notification: Notification) => (
                     <div
                       key={notification.id}
                       className={`p-4 hover:bg-muted/50 transition-colors ${
