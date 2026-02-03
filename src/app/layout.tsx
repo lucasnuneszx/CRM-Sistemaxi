@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 // AppSidebar and Navbar are likely part of a specific dashboard layout, not root.
 // import AppSidebar from "@/components/AppSidebar";
@@ -18,7 +18,8 @@ const inter = Inter({
   display: 'swap',
 });
 
-const geistMono = Geist_Mono({
+// Geist Mono não está disponível no Google Fonts, usando Inter como fallback
+const geistMono = Inter({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: 'swap',
