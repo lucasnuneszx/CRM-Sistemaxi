@@ -68,13 +68,6 @@ if frontend_url:
         frontend_url.rstrip('/'),
     ])
 
-# Permitir qualquer domínio .railway.app (para desenvolvimento)
-# Em produção, é melhor especificar os domínios exatos
-if os.getenv("ENVIRONMENT") == "production":
-    # Em produção, aceitar qualquer .railway.app
-    cors_origins.append("https://*.railway.app")
-    cors_origins.append("http://*.railway.app")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
