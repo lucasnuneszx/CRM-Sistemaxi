@@ -33,13 +33,13 @@ export default function NotificationCenter() {
 
   // Filtrar notificações por aba
   const getFilteredNotifications = () => {
-    const filtered = notifications.filter(n => n.status !== 'dismissed');
+    const filtered = notifications.filter((n: Notification) => n.status !== 'dismissed');
     
     switch (activeTab) {
       case 'nudges':
-        return filtered.filter(n => n.type === 'nudge' || n.type === 'urgent');
+        return filtered.filter((n: Notification) => n.type === 'nudge' || n.type === 'urgent');
       case 'info':
-        return filtered.filter(n => n.type === 'info');
+        return filtered.filter((n: Notification) => n.type === 'info');
       default:
         return filtered;
     }
@@ -120,13 +120,13 @@ export default function NotificationCenter() {
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="w-full">
           <TabsList className="w-full rounded-none border-b px-6">
             <TabsTrigger value="all" className="flex-1">
-              Todas ({notifications.filter(n => n.status !== 'dismissed').length})
+              Todas ({notifications.filter((n: Notification) => n.status !== 'dismissed').length})
             </TabsTrigger>
             <TabsTrigger value="nudges" className="flex-1">
-              Cobranças ({notifications.filter(n => (n.type === 'nudge' || n.type === 'urgent') && n.status !== 'dismissed').length})
+              Cobranças ({notifications.filter((n: Notification) => (n.type === 'nudge' || n.type === 'urgent') && n.status !== 'dismissed').length})
             </TabsTrigger>
             <TabsTrigger value="info" className="flex-1">
-              Informativos ({notifications.filter(n => n.type === 'info' && n.status !== 'dismissed').length})
+              Informativos ({notifications.filter((n: Notification) => n.type === 'info' && n.status !== 'dismissed').length})
             </TabsTrigger>
           </TabsList>
 
